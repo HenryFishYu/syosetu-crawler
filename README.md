@@ -1,6 +1,6 @@
 # syosetu crawler
 ### This is a project to fetch data from syosetu website, such as
-http://ncode.syosetu.com \
+https://ncode.syosetu.com \
 https://noc.syosetu.com 
 
 ### How to run it
