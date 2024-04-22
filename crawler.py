@@ -1,15 +1,17 @@
 import argparse
+import time
 
 import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urlparse
 
 
-def read_input() -> str:
+def read_input() -> (str,float):
     parser = argparse.ArgumentParser(description='Crawler for noc.syosetu.com')
     parser.add_argument('--url',required=True,help='the url of article page, for example: https://ncode.syosetu.com/n9066iw/, https://novel18.syosetu.com/n1701iw/')
+    parser.add_argument('--interval',required=False,help='interval between each request in seconds')
     args = parser.parse_args()
-    return args.url
+    return args.url, float(args.interval)
 def get_content_from_div(div)->str:
     return div.get_text(strip=True) if div else ""
 
@@ -33,7 +35,7 @@ headers = {
 }
 
 def main():
-    url = read_input()
+    url,interval_in_second = read_input()
     print("request website: "+url)
     headers["Host"] = urlparse(url).netloc
     response = requests.get(url, headers=headers)
@@ -47,6 +49,9 @@ def main():
     current_chapter = 1
     number_of_chapters = len(soup.find_all("dd"))+1
     for dd_elements in soup.find_all("dd"):
+        if interval_in_second:
+            print("interval: {interval_in_second} seconds".format(interval_in_second=interval_in_second))
+            time.sleep(interval_in_second)
         print("collecting chapter: {current_chapter}/{number_of_chapters}".format(current_chapter=current_chapter,number_of_chapters=number_of_chapters))
         sub_href = dd_elements.find_next("a").get("href")
         response = requests.get(url+sub_href, headers=headers)
